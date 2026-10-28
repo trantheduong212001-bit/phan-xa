@@ -8,9 +8,12 @@
 <meta name="apple-mobile-web-app-title" content="Phản xạ">
 <meta name="theme-color" content="#b3261e">
 <title>Phản xạ · luyện nói tiếng Trung</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
+<div id="banMoi" class="ban-moi" hidden>Đã có bản mới của app. <button id="taiLai">🔄 Tải lại</button></div>
 <main id="manHinh" aria-live="polite"></main>
 <div id="theTu" class="the-tu" hidden role="dialog" aria-label="Chi tiết từ"></div>
 <script type="module" src="app.js"></script>

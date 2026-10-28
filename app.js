@@ -7,8 +7,10 @@ import { batDauThu, dungThu, dangThu } from './js/micro.js';
 import { veHoiDap, huyHoiDap, dongThongKeTuan } from './man-hoi-dap.js';
 import { veCungMe, huyCungMe, dongBuoiTruoc } from './man-cung-me.js';
 import { veDanhMay, dongLanTruocDanhMay } from './man-danh-may.js';
+import { veOnTap, huyOnTap, hangDoiHomNay, demTheoKyNang } from './man-on-tap.js';
+import { veSaoLuu } from './man-sao-luu.js';
 
-const APP_PHIEN_BAN = '0.5.0';
+const APP_PHIEN_BAN = '0.7.0';
 const THU_TOI_DA_GIAY = 15;
 
 const { tu: TU, tinh_huong: TH } = NOI_DUNG;
@@ -34,11 +36,19 @@ const timCau = id => thHienTai?.cau.find(c => c.id === id) || thHienTai?.cuu_ho.
 // ——— Trang chính ———
 function veTrangChinh() {
   document.title = 'Phản xạ · luyện nói tiếng Trung';
+  const h = hangDoiHomNay(duLieu);
+  const soThe = h.on.length + h.moi.length;
   manHinh.innerHTML = `
     <h1>Phản xạ</h1>
     <p class="phu">Luyện nói tiếng Trung để gặp đối tác, ngồi bàn tiệc.</p>
-    <p class="chi">👉 Chọn một tình huống để nghe mẫu, nói theo và cho mẹ nghe duyệt.</p>
     ${khoMay.hong ? `<p class="chi loi">Dữ liệu tiến độ lưu trên máy bị hỏng nên app bắt đầu lại từ đầu. Các câu mẹ đã duyệt cần duyệt lại.</p>` : ''}
+
+    <h2>📅 Hôm nay</h2>
+    ${soThe ? `
+      <p class="chi">👉 Việc đầu tiên: ôn ${soThe} thẻ (${h.on.length} đến hạn, ${h.moi.length} mới).</p>
+      <p class="phu">${esc(demTheoKyNang([...h.on, ...h.moi]))}</p>
+      <a class="nut chinh-nut lon-nut" href="#/on">▶ Ôn hôm nay</a>`
+    : `<p class="chi">👉 Hôm nay ôn xong rồi. Chọn một tình huống bên dưới để luyện tiếp.</p>`}
 
     <h2>Tình huống</h2>
     <div class="ds">
@@ -71,12 +81,8 @@ function veTrangChinh() {
         <a class="o" href="#/dm/${esc(th.id)}"><b>${esc(th.ten)}</b><span class="phu">${esc(dongLanTruocDanhMay(duLieu, th.id))}</span></a>`).join('')}
     </div>
 
-    <h2>Sắp có</h2>
-    <div class="ds">
-      ${[
-        ['📅 Ôn hôm nay', 'Ôn riêng nghe hiểu, nhắc lại, tự nói, đánh máy'],
-      ].map(([ten, mo]) => `<div class="o sap"><b>${ten}</b> <span class="nhan">bản sau</span><span class="phu">${mo}</span></div>`).join('')}
-    </div>
+    <h2>💾 Sao lưu</h2>
+    <a class="nut" href="#/ma">💾 Sao lưu / chuyển tiến độ sang máy khác</a>
 
     <footer class="phu">App ${APP_PHIEN_BAN} · nội dung ${esc(NOI_DUNG.phien_ban)} · Câu mẫu là giọng máy, chỉ tin câu mẹ đã nghe duyệt.</footer>`;
 }
@@ -411,10 +417,13 @@ async function dinhTuyen() {
   dungDocHoiThoai();
   huyHoiDap();
   huyCungMe();
+  huyOnTap();
   if (dangThu()) await dungThuCau(dangMo);
   const [, loai, id] = location.hash.match(/^#\/(th|hd|me|dm)\/(.+)$/) || [];
   const th = id && TH.find(t => t.id === decodeURIComponent(id));
-  if (loai === 'th') veTinhHuong(decodeURIComponent(id));
+  if (location.hash === '#/on') { thHienTai = null; veOnTap(ctxMan); }
+  else if (location.hash === '#/ma') { thHienTai = null; veSaoLuu(ctxMan); }
+  else if (loai === 'th') veTinhHuong(decodeURIComponent(id));
   else if (th) { thHienTai = null; MAN_RIENG[loai](th, ctxMan); }
   else { thHienTai = null; veTrangChinh(); }
   window.scrollTo(0, 0);
@@ -427,3 +436,14 @@ khoiDongGiong(() => {
   else if (!location.hash || location.hash === '#/') veTrangChinh();
 });
 dinhTuyen();
+
+// Chạy khi mất mạng (sw.js). Có bản mới thay bản cũ đang chạy → báo để anh tự bấm tải lại, không tự tải giữa lúc đang học.
+if ('serviceWorker' in navigator) {
+  const daCoBanCu = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!daCoBanCu) return;
+    document.getElementById('banMoi').hidden = false;
+  });
+  document.getElementById('taiLai').onclick = () => location.reload();
+}
