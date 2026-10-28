@@ -1,6 +1,9 @@
 // Màn "Ôn hôm nay" (vé V07): ôn cách quãng riêng 4 kỹ năng.
 import { NOI_DUNG } from './noi-dung.js';
-import { KY_NANG, TEN_KY_NANG, ngayDiaPhuong, congNgay, danhSachMuc, lapHangDoi, ghiOn, khoa } from './js/on-tap.js';
+import { KY_NANG, KY_NANG_GT, TEN_KY_NANG, ngayDiaPhuong, congNgay, danhSachMuc, lapHangDoi, ghiOn, khoa, mucTuKho } from './js/on-tap.js';
+import { taiGiaoTrinh } from './js/giao-trinh.js';
+import { chonPhuongAn } from './js/trac-nghiem-tu.js';
+import { lamMotBaiTap } from './man-giao-trinh.js';
 import { timDiemMoMieng, tinhNguong } from './js/do-tre.js';
 import { danhGia as loaiDoTre } from './js/hoi-dap.js';
 import { soChu } from './js/danh-may.js';
@@ -11,6 +14,11 @@ import { giay } from './man-hoi-dap.js';
 const TH = NOI_DUNG.tinh_huong;
 const DS_MUC = danhSachMuc(TH);
 const SO_THE_NGAY_BAN = 5;
+// Giáo trình nhịp B đẩy khoảng 60–120 thẻ/ngày; giới hạn 20 của bộ giáo trình sẽ dồn ứ → nâng 60 (chốt 28/10/2026)
+const TOI_DA_ON = 60;
+let G = null;   // giáo trình, chỉ tải khi hàng đợi có thẻ giáo trình
+
+const dsMuc = duLieu => [...DS_MUC, ...mucTuKho(duLieu)];
 const CHO_TOI_DA_MS = 10000;
 
 // id → { noi_dung, th } cho câu hội thoại, câu hỏi, câu chép
@@ -28,13 +36,14 @@ const $ = id => document.getElementById(id);
 const nghi = ms => new Promise(r => setTimeout(r, ms));
 
 export function hangDoiHomNay(duLieu) {
-  return lapHangDoi(duLieu, DS_MUC, ngayDiaPhuong());
+  return lapHangDoi(duLieu, dsMuc(duLieu), ngayDiaPhuong(), { toiDaOn: TOI_DA_ON });
 }
 
 export function demTheoKyNang(ds) {
-  const dem = Object.fromEntries(KY_NANG.map(k => [k, 0]));
+  const tatCa = [...KY_NANG, ...KY_NANG_GT];
+  const dem = Object.fromEntries(tatCa.map(k => [k, 0]));
   for (const m of ds) dem[m.ky_nang]++;
-  return KY_NANG.filter(k => dem[k]).map(k => `${TEN_KY_NANG[k]} ${dem[k]}`).join(' · ');
+  return tatCa.filter(k => dem[k]).map(k => `${TEN_KY_NANG[k]} ${dem[k]}`).join(' · ');
 }
 
 function gioiHan() {
@@ -42,12 +51,19 @@ function gioiHan() {
   return [5, 3, 2].includes(g) ? g : 5;
 }
 
-export function veOnTap(c) {
+export async function veOnTap(c) {
   ctx = c;
   huyOnTap();
   const { manHinh } = ctx;
   const h = hangDoiHomNay(ctx.layDuLieu());
   const tong = h.on.length + h.moi.length;
+  if ([...h.on, ...h.moi].some(m => m.th === 'GT') && !G) {
+    manHinh.innerHTML = '<p class="phu">⏳ Đang tải giáo trình…</p>';
+    try { G = await taiGiaoTrinh(); } catch {
+      manHinh.innerHTML = '<p class="chi loi">Chưa tải được giáo trình nên chưa ôn được thẻ từ. Mở app một lần khi có mạng rồi thử lại.</p><a class="nut" href="#/">← Về trang chính</a>';
+      return;
+    }
+  }
   document.title = 'Ôn hôm nay · Phản xạ';
   manHinh.innerHTML = `
     <a class="nut lui" href="#/">← Về trang chính</a>
@@ -60,7 +76,7 @@ export function veOnTap(c) {
       <button class="chinh lon" id="onDu">▶ Ôn đủ buổi (${tong} thẻ)</button>
       <button class="lon" id="onBan">⏱ Ngày bận: ${Math.min(SO_THE_NGAY_BAN, tong)} thẻ</button>
       <p class="phu">Thẻ <b>Tự nói</b> cần micro, ngồi chỗ yên tĩnh. Thẻ <b>Đánh máy</b> cần bàn phím Bính âm.</p>`
-    : `<p class="chi">✅ Hôm nay ôn xong rồi. Mai có ${lapHangDoi(ctx.layDuLieu(), DS_MUC, congNgay(ngayDiaPhuong(), 1)).on.length} thẻ đến hạn.</p>
+    : `<p class="chi">✅ Hôm nay ôn xong rồi. Mai có ${lapHangDoi(ctx.layDuLieu(), dsMuc(ctx.layDuLieu()), congNgay(ngayDiaPhuong(), 1), { toiDaOn: 999 }).on.length} thẻ đến hạn.</p>
        <a class="nut" href="#/">← Về trang chính</a>`}`;
   if (!tong) return;
   const batDau = ds => {
@@ -74,9 +90,11 @@ export function veOnTap(c) {
 function khungThe(noiDung) {
   const { esc, manHinh } = ctx;
   const m = phien.ds[phien.i];
-  const { th } = TRA[m.id];
+  const nguon = m.th === 'GT'
+    ? `Giáo trình · ${m.ky_nang === 'bai_tap' ? G.bt.get(m.id).lesson_id : G.tu.get(m.id).first_lesson_id}`
+    : TRA[m.id].th.ten;
   manHinh.innerHTML = `
-    <p class="phu">Thẻ ${phien.i + 1}/${phien.ds.length} · <b>${TEN_KY_NANG[m.ky_nang]}</b> · ${esc(th.ten)}
+    <p class="phu">Thẻ ${phien.i + 1}/${phien.ds.length} · <b>${TEN_KY_NANG[m.ky_nang]}</b> · ${esc(nguon)}
       ${phien.moi.has(khoa(m.ky_nang, m.id)) ? '<span class="nhan">mới</span>' : ''}</p>
     ${noiDung}
     <div class="hang"><button id="dungOn">⏹ Dừng buổi ôn</button></div>`;
@@ -96,7 +114,65 @@ function ganDanhGia() {
 
 function veThe() {
   const m = phien.ds[phien.i];
+  if (m.th === 'GT') {
+    ({ nhan_chu: theNhanChu, nghe_tu: theNgheTu, nho_tu: theNhoTu, bai_tap: theBaiTap })[m.ky_nang](m.id);
+    return;
+  }
   ({ nghe_hieu: theNgheHieu, nhac_lai: theNhacLai, tu_noi: theTuNoi, danh_may: theDanhMay })[m.ky_nang](TRA[m.id].c);
+}
+
+// ——— Thẻ từ giáo trình ———
+function dapAnTu(v) {
+  const { esc } = ctx;
+  return `<div class="cau"><span class="zh" lang="zh-CN">${esc(v.hanzi)}</span> <span class="py">${esc(v.pinyin)}</span> — <b>${esc(v.meaning_vi)}</b>
+    <div class="hang"><button data-noi-chu="${esc(v.hanzi)}">▶ Nghe</button></div></div>`;
+}
+
+// Trắc nghiệm 4 phương án, chấm tự động: đúng → nhớ, sai → sai
+function theTracNghiem(tuId, kieu, deBai) {
+  const { esc } = ctx;
+  const v = G.tu.get(tuId);
+  const tn = chonPhuongAn(G, tuId, kieu);
+  khungThe(`${deBai}
+    <div class="ba-nut" id="cacPA">${tn.cacPhuongAn.map((p, k) => `<button data-pa="${k}" ${kieu === 'chu' ? 'class="the-chu" lang="zh-CN"' : ''}>${esc(p)}</button>`).join('')}</div>
+    <div id="sauTN"></div>`);
+  ctx.manHinh.querySelectorAll('[data-pa]').forEach(b => b.onclick = () => {
+    const dung = +b.dataset.pa === tn.viTriDung;
+    ctx.manHinh.querySelectorAll('[data-pa]').forEach(x => { x.disabled = true; if (+x.dataset.pa === tn.viTriDung) x.classList.add('nut-hieu'); });
+    $('sauTN').innerHTML = `<div class="o-hd ${dung ? 'kip' : 'cham'}">${dung ? '✅ Đúng' : '❌ Chưa đúng'}</div>${dapAnTu(v)}
+      <button class="chinh lon" id="tiepTN">▶ Thẻ tiếp</button>`;
+    $('tiepTN').onclick = () => chamThe(dung ? 'nho' : 'sai');
+  });
+}
+
+function theNhanChu(tuId) {
+  const v = G.tu.get(tuId);
+  theTracNghiem(tuId, 'nghia', `<p class="chi">👉 Từ này nghĩa là gì?</p><div class="chu-mau" lang="zh-CN">${ctx.esc(v.hanzi)}</div>`);
+}
+
+function theNgheTu(tuId) {
+  const v = G.tu.get(tuId);
+  theTracNghiem(tuId, 'chu', `<p class="chi">👉 Nghe rồi chọn đúng chữ.</p>
+    <div class="hang"><button class="chinh" id="ngheTu">▶ Nghe lại</button><button id="ngheCham">🐢 Chậm</button></div>`);
+  $('ngheTu').onclick = () => noi(v.hanzi);
+  $('ngheCham').onclick = () => noi(v.hanzi, 0.6);
+  noi(v.hanzi);
+}
+
+function theNhoTu(tuId) {
+  const { esc } = ctx;
+  const v = G.tu.get(tuId);
+  khungThe(`
+    <p class="chi">👉 Nói to từ tiếng Trung có nghĩa này, rồi mới bấm Xem đáp án.</p>
+    <div class="the-me">${esc(v.meaning_vi)}</div>
+    <button class="chinh lon" id="xemDA">👁 Xem đáp án</button>
+    <div id="sauNho" hidden>${dapAnTu(v)}${nutDanhGia(['Nói đúng', 'Nhớ chậm / sai thanh', 'Không nhớ'])}</div>`);
+  $('xemDA').onclick = () => { $('xemDA').hidden = true; $('sauNho').hidden = false; noi(v.hanzi); ganDanhGia(); };
+}
+
+function theBaiTap(btId) {
+  khungThe('<p class="chi">👉 Câu này lần trước làm chưa đúng. Làm lại nhé.</p><div id="vungBtOn"></div>');
+  lamMotBaiTap(ctx, G, btId, $('vungBtOn'), dung => chamThe(dung === true ? 'nho' : 'sai'));
 }
 
 function chuCau(c) {

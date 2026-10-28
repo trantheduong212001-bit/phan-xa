@@ -10,8 +10,9 @@ import { veDanhMay, dongLanTruocDanhMay } from './man-danh-may.js';
 import { veOnTap, huyOnTap, hangDoiHomNay, demTheoKyNang } from './man-on-tap.js';
 import { veSaoLuu } from './man-sao-luu.js';
 import { cheDoPhat } from './js/phien-am-thanh.js';
+import { veGiaoTrinh, veBai, veBuoi, veOGiaoTrinhHomNay } from './man-giao-trinh.js';
 
-const APP_PHIEN_BAN = '0.7.1';
+const APP_PHIEN_BAN = '0.9.0';
 cheDoPhat();   // mở app là gỡ ngay chế độ "gọi điện" nếu Safari đang kẹt từ lần dùng micro trước
 const THU_TOI_DA_GIAY = 15;
 
@@ -50,7 +51,11 @@ function veTrangChinh() {
       <p class="chi">👉 Việc đầu tiên: ôn ${soThe} thẻ (${h.on.length} đến hạn, ${h.moi.length} mới).</p>
       <p class="phu">${esc(demTheoKyNang([...h.on, ...h.moi]))}</p>
       <a class="nut chinh-nut lon-nut" href="#/on">▶ Ôn hôm nay</a>`
-    : `<p class="chi">👉 Hôm nay ôn xong rồi. Chọn một tình huống bên dưới để luyện tiếp.</p>`}
+    : `<p class="chi">👉 Hôm nay ôn thẻ xong rồi.</p>`}
+    <div id="oGtHomNay"><p class="phu">⏳ Đang tải giáo trình…</p></div>
+
+    <h2>📚 Giáo trình HSK1 → HSK4</h2>
+    <a class="nut" href="#/gt">📚 Xem lộ trình, các bài, ngày dự kiến xong</a>
 
     <h2>Tình huống</h2>
     <div class="ds">
@@ -380,6 +385,7 @@ document.addEventListener('click', async e => {
   else if (d.nghe) ngheCau(d.nghe, 1);
   else if (d.cham) ngheCau(d.cham, 0.6);
   else if (d.noiChu) { await truocKhiPhat(); dungDocHoiThoai(); noi(d.noiChu); }
+  else if (d.hienNghia) document.getElementById(d.hienNghia)?.classList.remove('che-nghia');
   else if (d.luyen) moLuyen(d.luyen);
   else if (d.thu) thuCau(d.thu);
   else if (d.dungThu) dungThuCau(d.dungThu);
@@ -424,11 +430,19 @@ async function dinhTuyen() {
   if (dangThu()) await dungThuCau(dangMo);
   const [, loai, id] = location.hash.match(/^#\/(th|hd|me|dm)\/(.+)$/) || [];
   const th = id && TH.find(t => t.id === decodeURIComponent(id));
-  if (location.hash === '#/on') { thHienTai = null; veOnTap(ctxMan); }
+  const gtBai = location.hash.match(/^#\/gt\/bai\/(.+)$/);
+  if (location.hash === '#/gt') { thHienTai = null; veGiaoTrinh(ctxMan); }
+  else if (location.hash === '#/gt/buoi') { thHienTai = null; veBuoi(ctxMan); }
+  else if (gtBai) { thHienTai = null; veBai(ctxMan, decodeURIComponent(gtBai[1])); }
+  else if (location.hash === '#/on') { thHienTai = null; veOnTap(ctxMan); }
   else if (location.hash === '#/ma') { thHienTai = null; veSaoLuu(ctxMan); }
   else if (loai === 'th') veTinhHuong(decodeURIComponent(id));
   else if (th) { thHienTai = null; MAN_RIENG[loai](th, ctxMan); }
-  else { thHienTai = null; veTrangChinh(); }
+  else {
+    thHienTai = null;
+    veTrangChinh();
+    veOGiaoTrinhHomNay(document.getElementById('oGtHomNay'), ctxMan);
+  }
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', dinhTuyen);
@@ -436,7 +450,10 @@ window.addEventListener('hashchange', dinhTuyen);
 // Safari nạp giọng không đồng bộ: nạp xong thì vẽ lại phần phụ thuộc giọng
 khoiDongGiong(() => {
   if (thHienTai) { capNhatDauTrang(); thHienTai.cau.forEach(c => capNhatCau(c.id)); }
-  else if (!location.hash || location.hash === '#/') veTrangChinh();
+  else if (!location.hash || location.hash === '#/') {
+    veTrangChinh();
+    veOGiaoTrinhHomNay(document.getElementById('oGtHomNay'), ctxMan);
+  }
 });
 dinhTuyen();
 

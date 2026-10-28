@@ -1,6 +1,6 @@
 // Lưu sẵn toàn bộ app để mở được khi mất mạng.
 // Mỗi bản mới: đổi PHIEN_BAN (bộ kiểm bắt khớp với app.js) và thêm tệp mới vào TEP (bộ kiểm bắt thiếu).
-const PHIEN_BAN = '0.7.1';
+const PHIEN_BAN = '0.9.0';
 const KHO_DEM = 'phanxa-' + PHIEN_BAN;
 const TEP = [
   './',
@@ -13,24 +13,31 @@ const TEP = [
   './man-danh-may.js',
   './man-on-tap.js',
   './man-sao-luu.js',
+  './man-giao-trinh.js',
   './manifest.webmanifest',
   './icon-180.png',
   './icon-192.png',
   './icon-512.png',
+  './du-lieu/giao-trinh.json',
+  './js/cham-bai.js',
   './js/chon-giong.js',
   './js/cung-me.js',
   './js/danh-may.js',
   './js/do-tre.js',
   './js/duyet.js',
+  './js/giao-trinh.js',
   './js/giong.js',
   './js/hoi-dap.js',
   './js/kho.js',
+  './js/lich-hoc.js',
   './js/ma-tien-do.js',
   './js/micro.js',
   './js/nghe-mic.js',
   './js/on-tap.js',
   './js/phien-am-thanh.js',
   './js/tach-cau.js',
+  './js/tien-do-gt.js',
+  './js/trac-nghiem-tu.js',
 ];
 
 self.addEventListener('install', e => {
