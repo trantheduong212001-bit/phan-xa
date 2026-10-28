@@ -62,7 +62,7 @@ ul.ghi { margin: 0; padding-left: 20px; }
 ul.ghi li { margin: 6px 0; }
 .khung { font-family: var(--zh); font-size: 22px; }
 .goi-y { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.goi-y span { background: var(--nen); border: 1px solid var(--vien); border-radius: 8px; padding: 4px 10px; font-family: var(--zh); font-size: 18px; }
+.goi-y button { font-family: var(--zh); font-size: 18px; font-weight: 400; }
 .goi-y small { font-family: -apple-system, system-ui, sans-serif; color: var(--phu); font-size: 13px; }
 
 /* Thẻ chi tiết từ, trượt lên từ đáy */
@@ -74,3 +74,17 @@ ul.ghi li { margin: 6px 0; }
 .the-tu .zh { font-size: 40px; }
 .the-tu button { width: 100%; justify-content: center; margin-top: 12px; }
 footer { margin-top: 32px; }
+
+/* Nghe, thu giọng, mẹ duyệt (V03) */
+.hang { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+button[aria-pressed="true"] { outline: 3px solid var(--xanh); outline-offset: 1px; }
+.chi.loi { border-color: var(--chinh); color: var(--chinh); }
+.nhan-duyet { font-size: 14px; color: var(--phu); margin-top: 6px; }
+.nhan-duyet.tot { color: var(--xanh); font-weight: 600; }
+.nhan-duyet.loi { color: var(--chinh); font-weight: 600; }
+.cau.dang-doc { outline: 3px solid var(--vang); }
+.luyen { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--vien); }
+.buoc-luyen { margin-bottom: 12px; }
+.bao { font-weight: 600; min-height: 0; }
+.bao.loi { color: var(--chinh); }
+.bao.tot { color: var(--xanh); }
