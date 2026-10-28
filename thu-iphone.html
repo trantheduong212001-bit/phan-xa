@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Thử phản xạ">
+<link rel="manifest" href="thu-iphone.webmanifest">
+<title>Thử iPhone · Phản xạ</title>
+<style>
+  :root { --nen: #f6f4ef; --the: #fff; --chu: #1f2328; --phu: #5c6370; --vien: #ddd8cc; --chinh: #b3261e; --xanh: #1a7f37; --vang: #9a6700; }
+  @media (prefers-color-scheme: dark) {
+    :root { --nen: #16181c; --the: #22252b; --chu: #eceff4; --phu: #a7adb8; --vien: #3a3f47; --chinh: #ff7b72; --xanh: #56d364; --vang: #e3b341; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--nen); color: var(--chu); font: 17px/1.5 -apple-system, system-ui, "Segoe UI", sans-serif; padding: 16px 16px 48px; padding-top: max(16px, env(safe-area-inset-top)); }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .chi { background: var(--the); border: 2px solid var(--chinh); border-radius: 12px; padding: 12px 14px; margin: 12px 0 16px; font-weight: 600; }
+  section { background: var(--the); border: 1px solid var(--vien); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  h2 { font-size: 18px; margin: 0 0 6px; }
+  p { margin: 6px 0; }
+  .phu { color: var(--phu); font-size: 15px; }
+  button { font: inherit; font-weight: 600; min-height: 48px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--vien); background: var(--nen); color: var(--chu); margin: 4px 6px 4px 0; cursor: pointer; }
+  button.chinh { background: var(--chinh); border-color: var(--chinh); color: #fff; }
+  button[aria-pressed="true"] { outline: 3px solid var(--xanh); }
+  button:disabled { opacity: .45; }
+  .hoi { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--vien); }
+  .thanh { height: 18px; background: var(--nen); border: 1px solid var(--vien); border-radius: 9px; overflow: hidden; margin: 8px 0; }
+  .thanh > div { height: 100%; width: 0; background: var(--xanh); transition: width 60ms linear; }
+  .bao { font-weight: 600; }
+  .bao.loi { color: var(--chinh); }
+  .bao.tot { color: var(--xanh); }
+  .zh { font-size: 26px; }
+  ol.so { margin: 6px 0; padding-left: 22px; }
+  textarea { width: 100%; min-height: 220px; font: 14px/1.45 ui-monospace, Menlo, monospace; border-radius: 10px; border: 1px solid var(--vien); background: var(--nen); color: var(--chu); padding: 10px; }
+</style>
+</head>
+<body>
+<h1>Thử iPhone · giọng đọc + micro</h1>
+<p class="phu">Trang thử của app "Phản xạ" (vé V01). Trang này chưa phải app, chỉ để biết iPhone của anh chạy được gì.</p>
+<p class="chi">👉 Làm lần lượt 6 bước từ trên xuống, mỗi bước bấm một câu trả lời. Xong bấm <b>📋 Chép kết quả</b> ở cuối rồi dán gửi em.</p>
+<p>Đang mở bằng: <b id="cheDo"></b></p>
+
+<section id="b1">
+  <h2>Bước 1 · Giọng tiếng Trung của máy</h2>
+  <p id="dsGiong" class="phu">Đang tìm giọng…</p>
+  <p class="zh">你好！很高兴认识您。</p>
+  <button class="chinh" id="nghe1">▶ Nghe</button>
+  <button id="nghe1Cham">🐢 Nghe chậm</button>
+  <p class="bao" id="bao1"></p>
+  <div class="hoi">Anh nghe có rõ không?
+    <div><button data-buoc="b1" data-tl="rõ">Nghe rõ</button><button data-buoc="b1" data-tl="không nghe thấy">Không nghe thấy</button></div>
+  </div>
+</section>
+
+<section id="b2">
+  <h2>Bước 2 · Bật micro</h2>
+  <p>Bấm nút, Safari hỏi quyền micro thì chọn <b>Cho phép</b>. Rồi nói "a…" thật to: thanh xanh phải nhảy lên.</p>
+  <button class="chinh" id="batMic">🎤 Bật micro</button>
+  <div class="thanh"><div id="muc"></div></div>
+  <p class="bao" id="bao2"></p>
+  <div class="hoi">Thanh xanh có nhảy khi anh nói không?
+    <div><button data-buoc="b2" data-tl="có nhảy">Có nhảy</button><button data-buoc="b2" data-tl="không nhảy">Không nhảy</button></div>
+  </div>
+</section>
+
+<section id="b3">
+  <h2>Bước 3 · Nghe khi micro đang bật</h2>
+  <p>Micro vẫn bật từ bước 2. Bấm nghe lại câu ở bước 1 và so độ to.</p>
+  <button class="chinh" id="nghe3">▶ Nghe khi micro bật</button>
+  <p class="bao" id="bao3"></p>
+  <div class="hoi">So với bước 1, tiếng thế nào?
+    <div>
+      <button data-buoc="b3" data-tl="vẫn to, rõ">Vẫn to, rõ</button>
+      <button data-buoc="b3" data-tl="nhỏ đi / ra loa nghe gọi">Nhỏ đi</button>
+      <button data-buoc="b3" data-tl="không nghe thấy">Không nghe thấy</button>
+    </div>
+  </div>
+</section>
+
+<section id="b4">
+  <h2>Bước 4 · Thu giọng rồi nghe lại</h2>
+  <p>Bấm thu, nói một câu bất kỳ trong 4 giây. Thu xong máy tự phát lại.</p>
+  <button class="chinh" id="thu">⏺ Thu 4 giây</button>
+  <audio id="banThu" controls hidden></audio>
+  <p class="bao" id="bao4"></p>
+  <div class="hoi">Anh có nghe lại được giọng mình không?
+    <div><button data-buoc="b4" data-tl="nghe lại được">Nghe lại được</button><button data-buoc="b4" data-tl="không nghe được">Không nghe được</button></div>
+  </div>
+</section>
+
+<section id="b5">
+  <h2>Bước 5 · Đo độ trễ</h2>
+  <p>Máy hỏi <span class="zh">你叫什么名字？</span> Nghe xong, <b>đếm thầm "một, hai"</b> rồi mới trả lời <b>我叫陈世阳</b>. Số đo đúng sẽ vào khoảng <b>1,5–2,5 giây</b>.</p>
+  <p class="phu">Có 2 cách bật micro, em chưa biết cách nào hợp iPhone của anh. Mỗi cách thử 3 lần, ở chỗ yên tĩnh.</p>
+  <ol class="so">
+    <li><b>Cách A</b>: micro bật suốt.</li>
+    <li><b>Cách B</b>: tắt micro lúc máy đọc, máy đọc xong mới bật lại.</li>
+  </ol>
+  <button class="chinh" id="doA">⏱ Đo cách A</button>
+  <button class="chinh" id="doB">⏱ Đo cách B</button>
+  <p class="bao" id="bao5"></p>
+  <p id="ketQua5" class="phu"></p>
+</section>
+
+<section id="b6">
+  <h2>Bước 6 · Thử từ màn hình chính</h2>
+  <ol class="so">
+    <li>Bấm <b>📋 Chép kết quả</b> ở dưới, dán gửi em trước.</li>
+    <li>Ở Safari bấm nút <b>Chia sẻ</b> (ô vuông có mũi tên lên) → <b>Thêm vào MH chính</b> → <b>Thêm</b>.</li>
+    <li>Ra màn hình chính, mở biểu tượng <b>Thử phản xạ</b>, làm lại bước 1–5, rồi chép kết quả gửi em lần nữa.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Kết quả</h2>
+  <textarea id="tongKet" readonly></textarea>
+  <button class="chinh" id="chep">📋 Chép kết quả</button>
+  <p class="bao" id="baoChep"></p>
+</section>
+
+<script type="module">
+import { timDiemMoMieng, tinhNguong } from './js/do-tre.js';
+
+const $ = id => document.getElementById(id);
+const CAU_THU = '你好！很高兴认识您。';
+const CAU_HOI = '你叫什么名字？';
+const kq = { b1: '', b2: '', b3: '', b4: '', A: [], B: [], sanSangB: [], nguong: null, loi: [] };
+
+const laManHinhChinh = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+$('cheDo').textContent = laManHinhChinh ? 'Màn hình chính' : 'Safari (trình duyệt)';
+
+function bao(id, chu, kieu = '') { const el = $(id); el.textContent = chu; el.className = 'bao ' + kieu; }
+function giay(ms) { return ms == null ? '—' : (ms / 1000).toFixed(1).replace('.', ','); }
+function ghiLoi(chu) { kq.loi.push(chu); capNhatTongKet(); }
+
+// ——— Giọng đọc ———
+let giongTrung = null;
+function chonGiong() {
+  const tatCa = speechSynthesis.getVoices().filter(v => /^zh[-_]CN/i.test(v.lang) || v.lang === 'zh');
+  if (!tatCa.length) {
+    $('dsGiong').innerHTML = 'Chưa thấy giọng tiếng Trung. Vào <b>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Trung (Trung Quốc đại lục)</b>, tải một giọng, rồi tải lại trang này.';
+    return;
+  }
+  const tot = tatCa.find(v => /enhanced|premium|nâng cao|增强|优化/i.test(v.name));
+  giongTrung = tot || tatCa[0];
+  kq.giong = tatCa.map(v => v.name);
+  $('dsGiong').textContent = `Có ${tatCa.length} giọng: ${kq.giong.join(', ')}. Đang dùng: ${giongTrung.name}.`;
+  capNhatTongKet();
+}
+if ('speechSynthesis' in window) {
+  chonGiong();
+  speechSynthesis.addEventListener('voiceschanged', chonGiong);
+} else {
+  $('dsGiong').textContent = 'Trình duyệt này không có giọng đọc.';
+}
+
+// Đọc câu; trả về mốc performance.now() lúc đọc xong (hoặc lúc hết giờ chờ).
+function noi(chu, toc = 1) {
+  return new Promise(resolve => {
+    if (!('speechSynthesis' in window)) { ghiLoi('không có speechSynthesis'); resolve({ xong: performance.now(), hetGio: true }); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(chu);
+    u.lang = 'zh-CN';
+    if (giongTrung) u.voice = giongTrung;
+    u.rate = toc;
+    let daXong = false;
+    const ket = hetGio => { if (daXong) return; daXong = true; clearTimeout(cho); resolve({ xong: performance.now(), hetGio }); };
+    const cho = setTimeout(() => { ghiLoi('máy đọc không báo "xong" (hết giờ chờ)'); ket(true); }, 2500 + chu.length * 700 / toc);
+    u.onend = () => ket(false);
+    u.onerror = e => { ghiLoi('lỗi đọc: ' + (e.error || 'không rõ')); ket(true); };
+    speechSynthesis.speak(u);
+  });
+}
+
+$('nghe1').onclick = async () => { bao('bao1', 'Đang đọc…'); await noi(CAU_THU); bao('bao1', 'Đọc xong.'); };
+$('nghe1Cham').onclick = async () => { bao('bao1', 'Đang đọc chậm…'); await noi(CAU_THU, 0.6); bao('bao1', 'Đọc xong.'); };
+
+// ——— Micro ———
+let luong = null, ngu = null, phanTich = null, nguon = null, dem = null;
+const mau = [];           // [{t, muc}] — mẫu âm lượng liên tục, 20 ms một lần
+let mucHienTai = 0;
+
+async function moMic() {
+  if (luong && luong.active) return true;
+  try {
+    luong = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+  } catch (e) {
+    const tuChoi = e.name === 'NotAllowedError';
+    bao('bao2', tuChoi
+      ? 'Safari chưa được dùng micro. Vào Cài đặt → Safari → Micrô → chọn "Hỏi" hoặc "Cho phép", rồi tải lại trang.'
+      : 'Không bật được micro: ' + e.name, 'loi');
+    ghiLoi('micro: ' + e.name);
+    return false;
+  }
+  ngu = ngu || new (window.AudioContext || window.webkitAudioContext)();
+  if (ngu.state === 'suspended') await ngu.resume();
+  nguon = ngu.createMediaStreamSource(luong);
+  phanTich = ngu.createAnalyser();
+  phanTich.fftSize = 1024;
+  nguon.connect(phanTich);
+  const buf = new Float32Array(phanTich.fftSize);
+  clearInterval(dem);
+  dem = setInterval(() => {
+    phanTich.getFloatTimeDomainData(buf);
+    let s = 0; for (const x of buf) s += x * x;
+    mucHienTai = Math.sqrt(s / buf.length);
+    mau.push({ t: performance.now(), muc: mucHienTai });
+    if (mau.length > 1500) mau.splice(0, 500);
+    $('muc').style.width = Math.min(100, mucHienTai * 400) + '%';
+  }, 20);
+  return true;
+}
+
+function tatMic() {
+  clearInterval(dem); dem = null;
+  if (luong) luong.getTracks().forEach(t => t.stop());
+  luong = null;
+  $('muc').style.width = '0';
+}
+
+$('batMic').onclick = async () => {
+  bao('bao2', 'Đang bật micro…');
+  if (await moMic()) bao('bao2', 'Micro đã bật. Nói "a…" thử xem thanh xanh.', 'tot');
+};
+
+$('nghe3').onclick = async () => {
+  if (!(await moMic())) return;
+  bao('bao3', 'Đang đọc, micro vẫn bật…');
+  await noi(CAU_THU);
+  bao('bao3', 'Đọc xong.');
+};
+
+// ——— Thu và nghe lại ———
+$('thu').onclick = async () => {
+  if (!(await moMic())) { bao('bao4', 'Cần bật micro ở bước 2 trước.', 'loi'); return; }
+  if (!window.MediaRecorder) { bao('bao4', 'Máy này không thu được (không có MediaRecorder).', 'loi'); ghiLoi('không có MediaRecorder'); return; }
+  const kieu = ['audio/mp4', 'audio/webm'].find(k => MediaRecorder.isTypeSupported(k));
+  const rec = new MediaRecorder(luong, kieu ? { mimeType: kieu } : undefined);
+  const manh = [];
+  rec.ondataavailable = e => e.data.size && manh.push(e.data);
+  rec.onstop = () => {
+    const blob = new Blob(manh, { type: rec.mimeType || kieu || 'audio/mp4' });
+    const a = $('banThu');
+    a.src = URL.createObjectURL(blob);
+    a.hidden = false;
+    a.play().catch(() => bao('bao4', 'Thu xong. Bấm ▶ trên thanh phát để nghe lại.'));
+    bao('bao4', `Thu xong (${Math.round(blob.size / 1024)} KB). Đang phát lại…`, 'tot');
+  };
+  rec.start();
+  let con = 4;
+  $('thu').disabled = true;
+  bao('bao4', `Đang thu… ${con}`);
+  const t = setInterval(() => {
+    con--;
+    if (con > 0) { bao('bao4', `Đang thu… ${con}`); return; }
+    clearInterval(t); rec.stop(); $('thu').disabled = false;
+  }, 1000);
+};
+
+// ——— Đo độ trễ ———
+const nghi = ms => new Promise(r => setTimeout(r, ms));
+
+async function doDoTre(cach) {
+  for (const id of ['doA', 'doB']) $(id).disabled = true;
+  try {
+    if (!(await moMic())) { bao('bao5', 'Cần bật micro ở bước 2 trước.', 'loi'); return; }
+    bao('bao5', 'Giữ yên lặng 1 giây để máy nghe tiếng nền…');
+    const moc = performance.now();
+    await nghi(800);
+    const nguong = tinhNguong(mau.filter(m => m.t >= moc));
+    kq.nguong = nguong;
+
+    if (cach === 'B') tatMic();
+    bao('bao5', 'Máy đang hỏi… nghe xong đếm thầm "một, hai" rồi trả lời.');
+    const { xong } = await noi(CAU_HOI);
+
+    let sanSang = 0;
+    if (cach === 'B') {
+      if (!(await moMic())) return;
+      sanSang = performance.now() - xong;
+      kq.sanSangB.push(sanSang);
+    }
+    bao('bao5', '🎤 Mời anh trả lời…');
+    let doTre = null;
+    const het = xong + 8000;
+    while (performance.now() < het) {
+      await nghi(50);
+      doTre = timDiemMoMieng(mau, { batDau: xong, nguong });
+      if (doTre != null) break;
+    }
+    kq[cach].push(doTre);
+    if (doTre == null) bao('bao5', 'Không nghe thấy tiếng trả lời trong 8 giây. Thử nói to hơn.', 'loi');
+    else bao('bao5', `Cách ${cach}: anh mở miệng sau ${giay(doTre)} giây.` + (cach === 'B' ? ` (Micro bật lại sau ${giay(sanSang)} giây.)` : ''), 'tot');
+    $('ketQua5').textContent = `Cách A: ${kq.A.map(giay).join(' · ') || 'chưa đo'} giây — Cách B: ${kq.B.map(giay).join(' · ') || 'chưa đo'} giây`;
+    capNhatTongKet();
+  } finally {
+    for (const id of ['doA', 'doB']) $(id).disabled = false;
+  }
+}
+$('doA').onclick = () => doDoTre('A');
+$('doB').onclick = () => doDoTre('B');
+
+// ——— Câu trả lời của anh + tổng kết ———
+document.querySelectorAll('button[data-buoc]').forEach(b => {
+  b.onclick = () => {
+    const buoc = b.dataset.buoc;
+    kq[buoc] = b.dataset.tl;
+    document.querySelectorAll(`button[data-buoc="${buoc}"]`).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    capNhatTongKet();
+  };
+});
+
+function capNhatTongKet() {
+  const bayGio = new Date().toLocaleString('vi-VN');
+  $('tongKet').value = [
+    `Thử iPhone · Phản xạ V01 · ${bayGio}`,
+    `Mở bằng: ${laManHinhChinh ? 'Màn hình chính' : 'Safari'}`,
+    `1. Giọng tiếng Trung: ${kq.giong ? kq.giong.join(', ') : 'không thấy'} · nghe: ${kq.b1 || 'chưa trả lời'}`,
+    `2. Micro: ${kq.b2 || 'chưa trả lời'}`,
+    `3. Nghe khi micro bật: ${kq.b3 || 'chưa trả lời'}`,
+    `4. Thu và nghe lại: ${kq.b4 || 'chưa trả lời'}`,
+    `5. Độ trễ (giây) — cách A: ${kq.A.map(giay).join(' · ') || 'chưa đo'} | cách B: ${kq.B.map(giay).join(' · ') || 'chưa đo'}` +
+      (kq.sanSangB.length ? ` | micro B bật lại sau: ${kq.sanSangB.map(giay).join(' · ')}` : '') +
+      (kq.nguong != null ? ` | ngưỡng: ${kq.nguong.toFixed(3)}` : ''),
+    `Lỗi: ${kq.loi.length ? kq.loi.join('; ') : 'không'}`,
+    `Máy: ${navigator.userAgent}`,
+  ].join('\n');
+}
+capNhatTongKet();
+
+$('chep').onclick = async () => {
+  capNhatTongKet();
+  try {
+    await navigator.clipboard.writeText($('tongKet').value);
+    bao('baoChep', 'Đã chép. Mở Zalo hoặc ô chat, giữ ngón tay rồi chọn Dán.', 'tot');
+  } catch {
+    $('tongKet').select();
+    bao('baoChep', 'Máy không cho chép tự động. Chữ đã được bôi đen: giữ ngón tay lên khung rồi chọn Sao chép.', 'loi');
+  }
+};
+</script>
+</body>
+</html>

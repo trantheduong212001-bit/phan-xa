@@ -1,0 +1,9 @@
+{
+  "name": "Thử phản xạ",
+  "short_name": "Thử phản xạ",
+  "start_url": "./thu-iphone.html",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#b3261e",
+  "lang": "vi"
+}
