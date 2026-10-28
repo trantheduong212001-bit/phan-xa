@@ -6,8 +6,9 @@ import { khoiDongGiong, coDocDuoc, giongHienTai, tenGiong, noi, dungDoc } from '
 import { batDauThu, dungThu, dangThu } from './js/micro.js';
 import { veHoiDap, huyHoiDap, dongThongKeTuan } from './man-hoi-dap.js';
 import { veCungMe, huyCungMe, dongBuoiTruoc } from './man-cung-me.js';
+import { veDanhMay, dongLanTruocDanhMay } from './man-danh-may.js';
 
-const APP_PHIEN_BAN = '0.4.0';
+const APP_PHIEN_BAN = '0.5.0';
 const THU_TOI_DA_GIAY = 15;
 
 const { tu: TU, tinh_huong: TH } = NOI_DUNG;
@@ -63,10 +64,16 @@ function veTrangChinh() {
         <a class="o" href="#/me/${esc(th.id)}"><b>${esc(th.ten)}</b><span class="phu">${th.the_me.length} thẻ · ${esc(dongBuoiTruoc(duLieu, th.id))}</span></a>`).join('')}
     </div>
 
+    <h2>⌨️ Đánh máy</h2>
+    <p class="phu">Cấp thấp chép câu mẫu, cấp cao gõ câu trả lời bằng chữ Hán.</p>
+    <div class="ds">
+      ${TH.map(th => `
+        <a class="o" href="#/dm/${esc(th.id)}"><b>${esc(th.ten)}</b><span class="phu">${esc(dongLanTruocDanhMay(duLieu, th.id))}</span></a>`).join('')}
+    </div>
+
     <h2>Sắp có</h2>
     <div class="ds">
       ${[
-        ['⌨️ Đánh máy', 'Cấp thấp chép câu mẫu, cấp cao gõ câu trả lời'],
         ['📅 Ôn hôm nay', 'Ôn riêng nghe hiểu, nhắc lại, tự nói, đánh máy'],
       ].map(([ten, mo]) => `<div class="o sap"><b>${ten}</b> <span class="nhan">bản sau</span><span class="phu">${mo}</span></div>`).join('')}
     </div>
@@ -172,6 +179,7 @@ function veTinhHuong(id) {
     <div class="hang">
       <a class="nut" href="#/hd/${esc(th.id)}">⏱ Hỏi–đáp có đồng hồ (${th.hoi_dap.length} câu)</a>
       <a class="nut" href="#/me/${esc(th.id)}">👩 Cùng mẹ (${th.the_me.length} thẻ)</a>
+      <a class="nut" href="#/dm/${esc(th.id)}">⌨️ Đánh máy</a>
     </div>
 
     <h2>Hội thoại</h2>
@@ -390,13 +398,13 @@ async function moLuyen(id) {
   document.querySelector(`[data-luyen="${id}"]`).setAttribute('aria-expanded', 'true');
 }
 
-// Bối cảnh chung cho các màn tách riêng (hỏi–đáp, cùng mẹ)
+// Bối cảnh chung cho các màn tách riêng (hỏi–đáp, cùng mẹ, đánh máy)
 const ctxMan = {
   manHinh, esc,
   layDuLieu: () => duLieu,
   luuDuLieu: d => { duLieu = d; return khoMay.ghi(d); },
 };
-const MAN_RIENG = { hd: veHoiDap, me: veCungMe };
+const MAN_RIENG = { hd: veHoiDap, me: veCungMe, dm: veDanhMay };
 
 async function dinhTuyen() {
   dongTheTu();
@@ -404,7 +412,7 @@ async function dinhTuyen() {
   huyHoiDap();
   huyCungMe();
   if (dangThu()) await dungThuCau(dangMo);
-  const [, loai, id] = location.hash.match(/^#\/(th|hd|me)\/(.+)$/) || [];
+  const [, loai, id] = location.hash.match(/^#\/(th|hd|me|dm)\/(.+)$/) || [];
   const th = id && TH.find(t => t.id === decodeURIComponent(id));
   if (loai === 'th') veTinhHuong(decodeURIComponent(id));
   else if (th) { thHienTai = null; MAN_RIENG[loai](th, ctxMan); }

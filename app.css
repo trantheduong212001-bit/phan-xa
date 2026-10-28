@@ -112,3 +112,17 @@ a.nut.chinh-nut { background: var(--chinh); border-color: var(--chinh); color: #
 .hai-nut button { min-height: 72px; font-size: 22px; justify-content: center; }
 .nut-hieu { background: var(--xanh); border-color: var(--xanh); color: #fff; }
 .nut-chua { background: var(--the); border: 2px solid var(--chinh); color: var(--chinh); }
+
+/* Đánh máy (V06) */
+.o-go {
+  width: 100%; font-family: var(--zh); font-size: 24px; line-height: 1.5; padding: 10px 12px; margin: 6px 0;
+  border: 2px solid var(--vien); border-radius: 12px; background: var(--the); color: var(--chu);
+}
+.o-go:focus { outline: none; border-color: var(--chinh); }
+.py-lon { font-size: 22px; color: var(--chu); }
+.so-chu span { display: inline-block; text-align: center; margin: 0 1px; }
+.c-sai { color: var(--chinh); background: var(--chinh-nhat); border-radius: 4px; padding: 0 2px; }
+.c-sai small { display: block; font-size: 13px; line-height: 1.1; }
+.c-thieu { color: var(--phu); border-bottom: 2px dashed var(--phu); opacity: .7; }
+details { margin-top: 16px; }
+summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
