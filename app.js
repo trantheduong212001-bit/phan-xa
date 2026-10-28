@@ -9,8 +9,10 @@ import { veCungMe, huyCungMe, dongBuoiTruoc } from './man-cung-me.js';
 import { veDanhMay, dongLanTruocDanhMay } from './man-danh-may.js';
 import { veOnTap, huyOnTap, hangDoiHomNay, demTheoKyNang } from './man-on-tap.js';
 import { veSaoLuu } from './man-sao-luu.js';
+import { cheDoPhat } from './js/phien-am-thanh.js';
 
-const APP_PHIEN_BAN = '0.7.0';
+const APP_PHIEN_BAN = '0.7.1';
+cheDoPhat();   // mở app là gỡ ngay chế độ "gọi điện" nếu Safari đang kẹt từ lần dùng micro trước
 const THU_TOI_DA_GIAY = 15;
 
 const { tu: TU, tinh_huong: TH } = NOI_DUNG;
@@ -159,7 +161,8 @@ function dauTrang() {
   if (!coDocDuoc()) return `<p class="chi loi">Trình duyệt này không có giọng đọc. Hãy mở bằng Safari trên iPhone.</p>`;
   if (!giongHienTai()) return `<p class="chi loi">Máy chưa có giọng tiếng Trung. Vào <b>Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Trung (Trung Quốc đại lục)</b>, tải giọng <b>Tingting</b>, rồi mở lại app.</p>`;
   const th = thHienTai;
-  return `<p class="phu">🔈 Giọng mẫu: <b>${esc(tenGiong())}</b> (giọng máy). Mẹ đã nghe duyệt <b>${demDuyet(duLieu, th.cau.map(c => c.id), giongHienTai().voiceURI)}/${th.cau.length}</b> câu.</p>`;
+  return `<p class="phu">🔈 Giọng mẫu: <b>${esc(tenGiong())}</b> (giọng máy). Mẹ đã nghe duyệt <b>${demDuyet(duLieu, th.cau.map(c => c.id), giongHienTai().voiceURI)}/${th.cau.length}</b> câu.</p>
+    <p class="phu">Bấm ▶ mà không có tiếng: tăng âm lượng, ngắt tai nghe Bluetooth. Vẫn im thì vuốt tắt hẳn Safari rồi mở lại.</p>`;
 }
 function capNhatDauTrang() {
   const el = document.getElementById('dauTrang');

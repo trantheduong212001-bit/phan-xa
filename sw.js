@@ -1,6 +1,6 @@
 // Lưu sẵn toàn bộ app để mở được khi mất mạng.
 // Mỗi bản mới: đổi PHIEN_BAN (bộ kiểm bắt khớp với app.js) và thêm tệp mới vào TEP (bộ kiểm bắt thiếu).
-const PHIEN_BAN = '0.7.0';
+const PHIEN_BAN = '0.7.1';
 const KHO_DEM = 'phanxa-' + PHIEN_BAN;
 const TEP = [
   './',
@@ -29,6 +29,7 @@ const TEP = [
   './js/micro.js',
   './js/nghe-mic.js',
   './js/on-tap.js',
+  './js/phien-am-thanh.js',
   './js/tach-cau.js',
 ];
 
