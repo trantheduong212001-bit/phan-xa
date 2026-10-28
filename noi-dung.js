@@ -5,7 +5,7 @@
 // Mọi câu CHƯA được người bản ngữ nghe duyệt; trạng thái duyệt bằng tai lưu trên máy người dùng.
 
 export const NOI_DUNG = {
-  phien_ban: '0.1.0',
+  phien_ban: '0.1.1',
 
   tu: {
     // ——— L08 (ID của Codex; cách dùng em viết thêm vì Codex chỉ có nghĩa) ———
@@ -70,11 +70,11 @@ export const NOI_DUNG = {
         { id: 'PX-L08-Q06', zh: '你想喝水吗？', py: 'Nǐ xiǎng hē shuǐ ma?', vi: 'Anh muốn uống nước không?', goi_y: '好的，谢谢。' },
       ],
       the_me: [
-        { id: 'PX-L08-M01', vi: 'Làm người phục vụ: hỏi Dương muốn uống gì.' },
-        { id: 'PX-L08-M02', vi: 'Hỏi lại cho chắc: một cốc trà, phải không?' },
-        { id: 'PX-L08-M03', vi: 'Mời Dương uống cà phê, xem Dương có từ chối được không.' },
-        { id: 'PX-L08-M04', vi: 'Hỏi Dương muốn ăn gì.' },
-        { id: 'PX-L08-M05', vi: 'Tự do: hỏi thêm một câu bất kỳ về đồ ăn, đồ uống.' },
+        { id: 'PX-L08-M01', vi: 'Làm người phục vụ: hỏi Dương muốn uống gì.', mau: ['PX-L08-Q02'] },
+        { id: 'PX-L08-M02', vi: 'Hỏi lại cho chắc: một cốc trà, phải không?', mau: ['PX-L08-Q03'] },
+        { id: 'PX-L08-M03', vi: 'Mời Dương uống cà phê, xem Dương có từ chối được không.', mau: ['PX-L08-Q04'] },
+        { id: 'PX-L08-M04', vi: 'Hỏi Dương muốn ăn gì.', mau: ['PX-L08-Q05'] },
+        { id: 'PX-L08-M05', vi: 'Tự do: hỏi thêm một câu bất kỳ về đồ ăn, đồ uống.', mau: [] },
       ],
       danh_may_thap: [
         { id: 'PX-L08-G01', zh: '你想喝什么？', py: 'Nǐ xiǎng hē shénme?' },
@@ -148,17 +148,17 @@ export const NOI_DUNG = {
         { id: 'PX-T01-Q14', zh: '以后多联系！', py: 'Yǐhòu duō liánxì!', vi: 'Sau này giữ liên lạc nhé!', goi_y: '好的，以后多联系！' },
       ],
       the_me: [
-        { id: 'PX-T01-M01', vi: 'Chào Dương và đưa danh thiếp.' },
-        { id: 'PX-T01-M02', vi: 'Hỏi họ của Dương cho lịch sự.' },
-        { id: 'PX-T01-M03', vi: 'Hỏi Dương làm chức vụ gì.' },
-        { id: 'PX-T01-M04', vi: 'Hỏi tên công ty, công ty làm gì.' },
-        { id: 'PX-T01-M05', vi: 'Hỏi công ty ở đâu, có người ở tỉnh nào.' },
-        { id: 'PX-T01-M06', vi: 'Hỏi công ty có bao nhiêu người.' },
-        { id: 'PX-T01-M07', vi: 'Hỏi Dương sống ở đâu.' },
-        { id: 'PX-T01-M08', vi: 'Khen Dương nói tiếng Trung giỏi.' },
-        { id: 'PX-T01-M09', vi: 'Hỏi Dương học tiếng Trung bao lâu rồi.' },
-        { id: 'PX-T01-M10', vi: 'Chào tạm biệt, hẹn giữ liên lạc.' },
-        { id: 'PX-T01-M11', vi: 'Tự do: hỏi thêm một câu bất kỳ về công việc hoặc gia đình.' },
+        { id: 'PX-T01-M01', vi: 'Chào Dương và đưa danh thiếp.', mau: ['PX-T01-Q13'] },
+        { id: 'PX-T01-M02', vi: 'Hỏi họ của Dương cho lịch sự.', mau: ['PX-T01-Q02'] },
+        { id: 'PX-T01-M03', vi: 'Hỏi Dương làm chức vụ gì.', mau: ['PX-T01-Q04'] },
+        { id: 'PX-T01-M04', vi: 'Hỏi tên công ty, công ty làm gì.', mau: ['PX-T01-Q05', 'PX-T01-Q06'] },
+        { id: 'PX-T01-M05', vi: 'Hỏi công ty ở đâu, có người ở tỉnh nào.', mau: ['PX-T01-Q07'] },
+        { id: 'PX-T01-M06', vi: 'Hỏi công ty có bao nhiêu người.', mau: ['PX-T01-Q08'] },
+        { id: 'PX-T01-M07', vi: 'Hỏi Dương sống ở đâu.', mau: ['PX-T01-Q09'] },
+        { id: 'PX-T01-M08', vi: 'Khen Dương nói tiếng Trung giỏi.', mau: ['PX-T01-Q11'] },
+        { id: 'PX-T01-M09', vi: 'Hỏi Dương học tiếng Trung bao lâu rồi.', mau: ['PX-T01-Q12'] },
+        { id: 'PX-T01-M10', vi: 'Chào tạm biệt, hẹn giữ liên lạc.', mau: ['PX-T01-Q14'] },
+        { id: 'PX-T01-M11', vi: 'Tự do: hỏi thêm một câu bất kỳ về công việc hoặc gia đình.', mau: [] },
       ],
       danh_may_thap: [
         { id: 'PX-T01-G01', zh: '很高兴认识您。', py: 'Hěn gāoxìng rènshi nín.' },

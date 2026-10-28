@@ -102,3 +102,13 @@ a.nut.chinh-nut { background: var(--chinh); border-color: var(--chinh); color: #
 .dong-ho { height: 10px; background: var(--vien); border-radius: 5px; overflow: hidden; margin-bottom: 12px; }
 .dong-ho > div { height: 100%; width: 0; background: var(--vang); }
 .so-lon { font-size: 28px; font-weight: 700; margin: 8px 0; }
+
+/* Cùng mẹ (V05): chữ to, nút to cho người lớn tuổi */
+.the-me {
+  font-size: 30px; line-height: 1.35; font-weight: 700; padding: 24px 16px; margin: 10px 0;
+  background: var(--the); border: 3px solid var(--chinh); border-radius: 16px;
+}
+.hai-nut { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.hai-nut button { min-height: 72px; font-size: 22px; justify-content: center; }
+.nut-hieu { background: var(--xanh); border-color: var(--xanh); color: #fff; }
+.nut-chua { background: var(--the); border: 2px solid var(--chinh); color: var(--chinh); }

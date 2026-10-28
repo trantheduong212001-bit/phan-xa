@@ -5,8 +5,9 @@ import { trangThaiDuyet, datDuyet, demDuyet } from './js/duyet.js';
 import { khoiDongGiong, coDocDuoc, giongHienTai, tenGiong, noi, dungDoc } from './js/giong.js';
 import { batDauThu, dungThu, dangThu } from './js/micro.js';
 import { veHoiDap, huyHoiDap, dongThongKeTuan } from './man-hoi-dap.js';
+import { veCungMe, huyCungMe, dongBuoiTruoc } from './man-cung-me.js';
 
-const APP_PHIEN_BAN = '0.3.0';
+const APP_PHIEN_BAN = '0.4.0';
 const THU_TOI_DA_GIAY = 15;
 
 const { tu: TU, tinh_huong: TH } = NOI_DUNG;
@@ -55,10 +56,16 @@ function veTrangChinh() {
         <a class="o" href="#/hd/${esc(th.id)}"><b>${esc(th.ten)}</b><span class="phu">${th.hoi_dap.length} câu hỏi</span></a>`).join('')}
     </div>
 
+    <h2>👩 Cùng mẹ</h2>
+    <p class="phu">Mẹ đọc thẻ gợi ý tiếng Việt, hỏi bằng lời của mẹ, rồi bấm Hiểu / Chưa hiểu.</p>
+    <div class="ds">
+      ${TH.map(th => `
+        <a class="o" href="#/me/${esc(th.id)}"><b>${esc(th.ten)}</b><span class="phu">${th.the_me.length} thẻ · ${esc(dongBuoiTruoc(duLieu, th.id))}</span></a>`).join('')}
+    </div>
+
     <h2>Sắp có</h2>
     <div class="ds">
       ${[
-        ['👩 Cùng mẹ', 'Gợi ý tiếng Việt chữ to, mẹ bấm Hiểu / Chưa hiểu'],
         ['⌨️ Đánh máy', 'Cấp thấp chép câu mẫu, cấp cao gõ câu trả lời'],
         ['📅 Ôn hôm nay', 'Ôn riêng nghe hiểu, nhắc lại, tự nói, đánh máy'],
       ].map(([ten, mo]) => `<div class="o sap"><b>${ten}</b> <span class="nhan">bản sau</span><span class="phu">${mo}</span></div>`).join('')}
@@ -162,7 +169,10 @@ function veTinhHuong(id) {
     <p class="phu">${esc(th.boi_canh)}</p>
     <div id="dauTrang">${dauTrang()}</div>
     <p class="chi">👉 Nghe cả hội thoại vài lượt trước khi xem nghĩa. Rồi bấm <b>🎤 Luyện câu này</b> ở từng câu để nói theo.</p>
-    <a class="nut" href="#/hd/${esc(th.id)}">⏱ Hỏi–đáp có đồng hồ (${th.hoi_dap.length} câu)</a>
+    <div class="hang">
+      <a class="nut" href="#/hd/${esc(th.id)}">⏱ Hỏi–đáp có đồng hồ (${th.hoi_dap.length} câu)</a>
+      <a class="nut" href="#/me/${esc(th.id)}">👩 Cùng mẹ (${th.the_me.length} thẻ)</a>
+    </div>
 
     <h2>Hội thoại</h2>
     <div class="hang" id="nutHoiThoai">${nutHoiThoai(false)}</div>
@@ -380,24 +390,25 @@ async function moLuyen(id) {
   document.querySelector(`[data-luyen="${id}"]`).setAttribute('aria-expanded', 'true');
 }
 
-const ctxHoiDap = {
+// Bối cảnh chung cho các màn tách riêng (hỏi–đáp, cùng mẹ)
+const ctxMan = {
   manHinh, esc,
   layDuLieu: () => duLieu,
   luuDuLieu: d => { duLieu = d; return khoMay.ghi(d); },
 };
+const MAN_RIENG = { hd: veHoiDap, me: veCungMe };
 
 async function dinhTuyen() {
   dongTheTu();
   dungDocHoiThoai();
   huyHoiDap();
+  huyCungMe();
   if (dangThu()) await dungThuCau(dangMo);
-  const th = location.hash.match(/^#\/th\/(.+)$/);
-  const hd = location.hash.match(/^#\/hd\/(.+)$/);
-  if (th) veTinhHuong(decodeURIComponent(th[1]));
-  else if (hd && TH.some(t => t.id === decodeURIComponent(hd[1]))) {
-    thHienTai = null;
-    veHoiDap(TH.find(t => t.id === decodeURIComponent(hd[1])), ctxHoiDap);
-  } else { thHienTai = null; veTrangChinh(); }
+  const [, loai, id] = location.hash.match(/^#\/(th|hd|me)\/(.+)$/) || [];
+  const th = id && TH.find(t => t.id === decodeURIComponent(id));
+  if (loai === 'th') veTinhHuong(decodeURIComponent(id));
+  else if (th) { thHienTai = null; MAN_RIENG[loai](th, ctxMan); }
+  else { thHienTai = null; veTrangChinh(); }
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', dinhTuyen);
